@@ -13,3 +13,6 @@ def userSignupView(request):
     else:
         form = UserSignupForm()
         return render(request,'core/signup.html',{'form':form})
+    
+def userLoginView(request):
+    return render(request, 'core/login.html')

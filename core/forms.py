@@ -7,6 +7,23 @@ class UserSignupForm(UserCreationForm):
         model = User
         fields = ['email','role','password1','password2']
         widgets = {
-            'password1':forms.PasswordInput(),
-            'password2':forms.PasswordInput(),
+            'email': forms.EmailInput(attrs={
+                'class': 'input-field',
+                'placeholder': 'Enter your email'
+            }),
+            'role': forms.Select(attrs={
+                'class': 'input-field'
+            }),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['password1'].widget.attrs.update({
+            'class': 'input-field',
+            'placeholder': 'Enter password'
+        })
+
+        self.fields['password2'].widget.attrs.update({
+            'class': 'input-field',
+            'placeholder': 'Confirm password'
+        })
