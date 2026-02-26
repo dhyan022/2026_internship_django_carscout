@@ -1,0 +1,49 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Seller Dashboard{% endblock %}
+
+{% block sidebar %}
+<a class="text-white d-block mb-3" href="#">Overview</a>
+<a class="text-white d-block mb-3" href="#">My Listings</a>
+<a class="text-white d-block mb-3" href="#">Add Car</a>
+<a class="text-white d-block mb-3" href="#">Appointments</a>
+<a class="text-white d-block mb-3" href="#">Messages</a>
+<a class="text-danger d-block mt-4" href="{% url 'logout' %}">Logout</a>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Welcome back, {{ request.user.username }} 👋</h2>
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-4">
+            <h6>Total Listings</h6>
+            <h3>8</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-4">
+            <h6>Pending Inquiries</h6>
+            <h3>4</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm p-4">
+            <h6>Appointments Today</h6>
+            <h3>2</h3>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm p-4 mt-5">
+    <h5>Recent Activity</h5>
+    <hr>
+    <p>No recent activity yet.</p>
+</div>
+
+{% endblock %}

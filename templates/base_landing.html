@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Carscout{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<div class="left">
+    <div class="logo">Car<span>scout</span></div>
+
+    {% block content %}
+    {% endblock %}
+</div>
+
+<div class="right">
+    <div class="circle"></div>
+    <img src="{% static 'images/car.png' %}" class="car-img">
+</div>
+
+</body>
+</html>

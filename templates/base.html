@@ -3,247 +3,45 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>{% block title %}Carbo{% endblock %}</title>
+<title>{% block title %}Carscout{% endblock %}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-body{
-    height:100vh;
-    display:flex;
-    overflow:hidden;
-    background:#f3efe9;
-}
+<!-- Optional Global CSS -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-/* ================= LEFT ================= */
-
-.left{
-    width:50%;
-    padding:80px 100px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    z-index:2;
-}
-
-.logo{
-    font-size:28px;
-    font-weight:bold;
-    margin-bottom:70px;
-}
-
-.logo span{
-    color:#f4a261;
-}
-
-.welcome-small{
-    color:#777;
-    font-size:22px;
-    margin-bottom:10px;
-}
-
-h1{
-    font-size:60px;
-    color:#2f3542;
-    margin-bottom:40px;
-}
-
-input{
-    width:100%;
-    border:none;
-    border-bottom:1px solid #ccc;
-    padding:12px 5px;
-    margin:20px 0;
-    background:transparent;
-    font-size:15px;
-}
-
-button{
-    margin-top:30px;
-    padding:14px 50px;
-    border:none;
-    border-radius:30px;
-    background:#f4a261;
-    color:white;
-    cursor:pointer;
-    font-weight:500;
-}
-
-.bottom-text{
-    margin-top:20px;
-    color:#777;
-}
-
-.bottom-text span{
-    color:#f4a261;
-    font-weight:600;
-}
-
-/* ================= RIGHT ================= */
-
-.right{
-    width:50%;
-    position:relative;
-    overflow:visible;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-/* BIG ORANGE CIRCLE */
-
-.circle{
-    position:absolute;
-    width:1200px;
-    height:1200px;
-    background:#eda062;
-    border-radius:50%;
-    right:-500px;
-    top:-150px;
-    z-index:0;
-}
-
-/* CAR */
-
-.car-img{
-    position:absolute;
-    width:850px;
-    right:150px;
-    bottom:90px;
-    z-index:2;
-    transition: transform 0.4s ease, filter 0.4s ease;
-}
-
-.car-img:hover{
-    transform: scale(1.05);
-    filter: drop-shadow(0 60px 70px rgba(0,0,0,0.45));
-}
-/* FLOATING DOTS */
-
-.dot{
-    position:absolute;
-    width:12px;
-    height:12px;
-    background:#f4a261;
-    border-radius:50%;
-    z-index:3;
-}
-
-.dot1{ top:200px; left:50px; }
-.dot2{ bottom:120px; left:200px; }
-.dot3{ bottom:60px; right:180px; }
-
-/* TOP NAV */
-
-.nav{
-    position:absolute;
-    top:40px;
-    right:60px;
-    z-index:3;
-}
-
-.nav a{
-    margin-left:30px;
-    color:white;
-    text-decoration:none;
-    font-size:14px;
-}
-
-/* QUOTE */
-
-.quote{
-    position:absolute;
-    bottom:50px;
-    right:50px;
-    font-size:20px;
-    color:#333;
-    z-index:3;
-}
-
-.quote span{
-    color:#ffffff;
-    font-weight:bold;
-}
-
-.quote small{
-    display:block;
-    font-size:14px;
-    margin-top:8px;
-}
-
-/* FOOTER */
-
-.footer{
-    position:absolute;
-    bottom:40px;
-    left:100px;
-    font-size:14px;
-    color:#777;
-}
-
-.footer span{
-    margin-left:30px;
-    color:#f4a261;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1100px){
-    body{
-        flex-direction:column;
-    }
-    .left, .right{
-        width:100%;
-        height:50vh;
-    }
-    .circle{
-        width:700px;
-        height:700px;
-        right:-250px;
-    }
-    .car-img{
-        right:0;
-        width:80%;
-    }
-}
-</style>
+{% block extra_css %}{% endblock %}
 </head>
 <body>
 
-<div class="left">
-    <div class="logo">Car<span>scout</span></div>
+<nav class="navbar navbar-dark bg-dark px-4">
+    <a class="navbar-brand text-white" href="/">Carscout</a>
 
-    <div class="welcome-small">Welcome To</div>
-    <h1>Carscout</h1>
+    <div>
+    {% if user.is_authenticated %}
 
+        {% if user.role == "Buyer" %}
+            <a class="text-white me-3" href="{% url 'buyer_dashboard' %}">Buyer Dashboard</a>
+        {% elif user.role == "Seller" %}
+            <a class="text-white me-3" href="{% url 'seller_dashboard' %}">Seller Dashboard</a>
+        {% elif user.role == "Admin" %}
+            <a class="text-white me-3" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+        {% endif %}
+
+        <a class="text-danger" href="{% url 'logout' %}">Logout</a>
+
+    {% else %}
+        <a class="text-white me-3" href="{% url 'login' %}">Login</a>
+        <a class="text-white" href="{% url 'signup' %}">Signup</a>
+    {% endif %}
+    </div>
+</nav>
+
+<div class="container mt-4">
     {% block content %}
     {% endblock %}
-
-</div>
-
-<div class="right">
-
-    <div class="circle"></div>
-
-    <div class="nav">
-        <a href="#">About Carscout</a>
-        <a href="#">Contact Us</a>
-        <a href="#">FAQ</a>
-    </div>
-
-    <img src="{% static 'images/car.png' %}" class="car-img" alt="Car">
-
-    <div class="quote">
-        “I take to the open road, <span>healthy</span>, 
-        <small>free, the world before me.”</small>
-    </div>
-
 </div>
 
 </body>

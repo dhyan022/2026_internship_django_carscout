@@ -1,0 +1,69 @@
+body.dashboard-body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f7fb;
+}
+
+.dashboard-wrapper {
+    display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background: #111827;
+    color: white;
+    padding: 25px 20px;
+    position: fixed;
+}
+
+.sidebar-logo {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 40px;
+}
+
+.sidebar-logo span {
+    color: #f97316;
+}
+
+.sidebar-nav a {
+    display: block;
+    color: #cbd5e1;
+    padding: 10px 0;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.sidebar-nav a:hover {
+    color: white;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 250px;
+    width: 100%;
+}
+
+.topbar {
+    background: white;
+    padding: 15px 30px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-area {
+    padding: 30px;
+}
+
+/* Cards */
+.dashboard-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}

@@ -1,12 +1,24 @@
-{% extends "base.html" %}
+{% extends "base_landing.html" %}
+
+{% block title %}Sign Up{% endblock %}
 
 {% block content %}
 <form method="POST">
     {% csrf_token %}
+   
+    <div class="form-group">
+    <label>Username</label>
+    {{ form.username }}
+    </div>
 
     <div class="form-group">
         <label>Email</label>
         {{ form.email }}
+    </div>
+
+    <div class="form-group">
+        <label>Role</label>
+        {{ form.role }}
     </div>
 
     <div class="form-group">

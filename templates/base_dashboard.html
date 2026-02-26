@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body style="margin:0;">
+
+<div style="display:flex; min-height:100vh;">
+
+    <!-- Sidebar -->
+    <aside style="width:250px; background:#111827; color:white; padding:20px;">
+        <h4 style="color:#f97316;">CarScout</h4>
+        <hr style="border-color:#374151;">
+        {% block sidebar %}{% endblock %}
+    </aside>
+
+    <!-- Main Content -->
+    <main style="flex:1; background:#f3f4f6; padding:40px;">
+        {% block content %}{% endblock %}
+    </main>
+
+</div>
+
+</body>
+</html>

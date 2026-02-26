@@ -1,0 +1,38 @@
+{% extends 'base_dashboard.html' %}
+
+{% block sidebar %}
+<a class="text-white d-block mb-2" href="#">Overview</a>
+<a class="text-white d-block mb-2" href="#">Saved Cars</a>
+<a class="text-white d-block mb-2" href="#">Appointments</a>
+<a class="text-danger d-block" href="{% url 'logout' %}">Logout</a>
+{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome back, {{ user.username }} 👋</h2>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <h6>Saved Cars</h6>
+            <h3>12</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <h6>Upcoming Appointments</h6>
+            <h3>3</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="dashboard-card">
+            <h6>Offers Received</h6>
+            <h3>5</h3>
+        </div>
+        <div class="card shadow-sm p-4 mt-5">
+            <h5>Recent Activity</h5>
+            <hr>
+            <p>No recent activity yet.</p>
+        </div>
+{% endblock %}
