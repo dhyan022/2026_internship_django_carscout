@@ -2,21 +2,57 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.views import View
+from django.contrib import messages
 from .forms import UserSignupForm, UserLoginForm
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.conf import settings
+from django.http import HttpResponse
+import os
+from django.core.mail import EmailMultiAlternatives
 
 
 # =========================
 # Signup
 # =========================
+
 def signup_view(request):
     form = UserSignupForm()
 
     if request.method == "POST":
         form = UserSignupForm(request.POST)
         if form.is_valid():
+
             user = form.save()
-            login(request, user)
-            return redirect("home")
+
+            subject = "Welcome To Car Scout 🚗"
+            from_email = settings.EMAIL_HOST_USER
+            to_email = [user.email]
+
+            # Render HTML template
+            html_content = render_to_string(
+                "email/car_scout_email.html",
+                {"user": user}
+            )
+            print("HTML CONTENT:")
+            print(html_content)
+
+            # Plain text fallback (important!)
+            text_content = f"Welcome to Car Scout, {user.username}"
+
+            email = EmailMultiAlternatives(
+                subject,
+                text_content,
+                from_email,
+                to_email
+            )
+
+            email.attach_alternative(html_content, "text/html")
+            email.send()
+
+            messages.success(request, "Successfully Signed Up! Please login.")
+            return redirect("login")
 
     return render(request, "core/signup.html", {"form": form})
 
@@ -32,13 +68,14 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect("home")
+            return redirect("login")
 
     return render(request, "core/login.html", {"form": form})
 
-from django.contrib.auth import logout
-from django.shortcuts import redirect
 
+# =========================
+# Logout
+# =========================
 def logout_view(request):
     logout(request)
     return redirect("login")
@@ -75,3 +112,39 @@ def buyer_dashboard(request):
 @login_required
 def seller_dashboard(request):
     return render(request, "core/seller_dashboard.html")
+
+#==========================
+#    Email Response
+#==========================
+def send_car_brochure_email(request, car_id):
+
+    users = User.objects.all()
+
+    for user in users:
+        subject = "🚗 Car Scout - Special Update"
+        from_email = settings.EMAIL_HOST_USER
+        to_email = [user.email]
+
+        # Render HTML
+        html_content = render_to_string(
+            'email/email.html',
+            {'user': user}
+        )
+
+        email = EmailMultiAlternatives(
+            subject,
+            "Your email client does not support HTML",
+            from_email,
+            to_email
+        )
+
+        email.attach_alternative(html_content, "text/html")
+
+        # Attach a file (example: PDF or image)
+        file_path = os.path.join(settings.BASE_DIR, 'media/sample.pdf')
+        if os.path.exists(file_path):
+            email.attach_file(file_path)
+
+        email.send()
+
+    return HttpResponse("Emails Sent Successfully!")

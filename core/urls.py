@@ -11,4 +11,5 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path("buyer-dashboard/", TemplateView.as_view(template_name="core/buyer_dashboard.html"), name="buyer_dashboard"),
     path("seller-dashboard/", TemplateView.as_view(template_name="core/seller_dashboard.html"), name="seller_dashboard"),
+    path('send-emails/<int:car_id>/', views.send_car_brochure_email, name='send_emails'),
 ]
