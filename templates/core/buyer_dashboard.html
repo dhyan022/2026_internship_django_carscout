@@ -1,38 +1,165 @@
 {% extends 'base_dashboard.html' %}
+{% load static %}
 
 {% block sidebar %}
-<a class="text-white d-block mb-2" href="#">Overview</a>
-<a class="text-white d-block mb-2" href="#">Saved Cars</a>
-<a class="text-white d-block mb-2" href="#">Appointments</a>
-<a class="text-danger d-block" href="{% url 'logout' %}">Logout</a>
+<a class="text-white d-block mb-3 fw-semibold" href="#">Overview</a>
+<a class="text-white d-block mb-3" href="#">Saved Cars</a>
+<a class="text-white d-block mb-3" href="#">Appointments</a>
+<a class="text-white d-block mb-3" href="#">Test Drive</a>
+<a class="text-danger d-block mt-4" href="{% url 'logout' %}">Logout</a>
 {% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Welcome back, {{ user.username }} 👋</h2>
+<div style="background:red;color:white;padding:20px;font-size:30px;">
+    NEW TEMPLATE LOADED
+</div>
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <h2 class="mb-0">Welcome, {{ user.username }} 👋</h2>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="#" class="btn btn-light border rounded-pill px-4">Browse Cars</a>
+        <a href="#" class="btn btn-light border rounded-pill px-4">Saved</a>
+        <a href="#" class="btn btn-danger rounded-pill px-4">Book Test Drive</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="dashboard-card h-100">
+            <h6>Saved Cars</h6>
+            <h3>{{ saved_count|default:"0" }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="dashboard-card h-100">
+            <h6>Upcoming Appointments</h6>
+            <h3>{{ appointment_count|default:"0" }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="dashboard-card h-100">
+            <h6>Offers Received</h6>
+            <h3>{{ offers_count|default:"0" }}</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Luxury Cars -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Luxury Cars</h3>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for car in luxury_cars %}
+    <div class="col-lg-3 col-md-6">
+        <div class="car-card">
+            <div class="car-image-wrap">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.title }}" class="car-image">
+                {% else %}
+                    <div class="no-image">No Image</div>
+                {% endif %}
+                <span class="badge">{{ car.category|title }}</span>
+            </div>
+
+            <div class="car-info">
+                <h5>{{ car.title }}</h5>
+                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="price">₹{{ car.price }}</p>
+
+                <div class="card-actions">
+                    <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm p-4">
+            <p class="mb-0">No luxury cars available.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Sports Cars -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Sports Cars</h3>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for car in sports_cars %}
+    <div class="col-lg-3 col-md-6">
+        <div class="car-card">
+            <div class="car-image-wrap">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.title }}" class="car-image">
+                {% else %}
+                    <div class="no-image">No Image</div>
+                {% endif %}
+                <span class="badge">{{ car.category|title }}</span>
+            </div>
+
+            <div class="car-info">
+                <h5>{{ car.title }}</h5>
+                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="price">₹{{ car.price }}</p>
+
+                <div class="card-actions">
+                    <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm p-4">
+            <p class="mb-0">No sports cars available.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Electric Cars -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Electric Cars</h3>
+</div>
 
 <div class="row g-4">
-    <div class="col-md-4">
-        <div class="dashboard-card">
-            <h6>Saved Cars</h6>
-            <h3>12</h3>
+    {% for car in electric_cars %}
+    <div class="col-lg-3 col-md-6">
+        <div class="car-card">
+            <div class="car-image-wrap">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.title }}" class="car-image">
+                {% else %}
+                    <div class="no-image">No Image</div>
+                {% endif %}
+                <span class="badge">{{ car.category|title }}</span>
+            </div>
+
+            <div class="car-info">
+                <h5>{{ car.title }}</h5>
+                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="price">₹{{ car.price }}</p>
+
+                <div class="card-actions">
+                    <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="col-md-4">
-        <div class="dashboard-card">
-            <h6>Upcoming Appointments</h6>
-            <h3>3</h3>
+    {% empty %}
+    <div class="col-12">
+        <div class="card shadow-sm p-4">
+            <p class="mb-0">No electric cars available.</p>
         </div>
     </div>
+    {% endfor %}
+</div>
 
-    <div class="col-md-4">
-        <div class="dashboard-card">
-            <h6>Offers Received</h6>
-            <h3>5</h3>
-        </div>
-        <div class="card shadow-sm p-4 mt-5">
-            <h5>Recent Activity</h5>
-            <hr>
-            <p>No recent activity yet.</p>
-        </div>
 {% endblock %}
