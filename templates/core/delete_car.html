@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Car</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+            padding:40px;
+        }
+        .box{
+            max-width:500px;
+            margin:auto;
+            background:#fff;
+            padding:30px;
+            border-radius:14px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+            text-align:center;
+        }
+        .btn{
+            padding:10px 18px;
+            border:none;
+            border-radius:8px;
+            text-decoration:none;
+            cursor:pointer;
+            margin:10px;
+            display:inline-block;
+        }
+        .delete{
+            background:#d93b3b;
+            color:white;
+        }
+        .cancel{
+            background:#ddd;
+            color:black;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Delete Car</h2>
+        <p>Are you sure you want to delete <strong>{{ car.title }}</strong>?</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn delete">Yes, Delete</button>
+            <a href="{% url 'seller_dashboard' %}" class="btn cancel">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

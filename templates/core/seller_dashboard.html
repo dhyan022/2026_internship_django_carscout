@@ -1,49 +1,91 @@
-{% extends 'base_dashboard.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/seller_dashboard.css' %}">
+</head>
+<body>
 
-{% block title %}Seller Dashboard{% endblock %}
+<div class="dashboard-wrapper">
 
-{% block sidebar %}
-<a class="text-white d-block mb-3" href="#">Overview</a>
-<a class="text-white d-block mb-3" href="#">My Listings</a>
-<a class="text-white d-block mb-3" href="#">Add Car</a>
-<a class="text-white d-block mb-3" href="#">Appointments</a>
-<a class="text-white d-block mb-3" href="#">Messages</a>
-<a class="text-danger d-block mt-4" href="{% url 'logout' %}">Logout</a>
-{% endblock %}
+    <aside class="sidebar">
+        <div class="logo">CarScout</div>
 
-{% block content %}
+        <nav class="sidebar-nav">
+            <a href="#" class="active">Overview</a>
+            <a href="{% url 'add_car' %}">Add Car</a>
+            <a href="#">My Listings</a>
+            <a href="#">Messages</a>
+            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+        </nav>
+    </aside>
 
-<h2 class="mb-4">Welcome back, {{ request.user.username }} 👋</h2>
+    <main class="main-content">
+        <div class="topbar">
+            <div>
+                <h1>Welcome, {{ request.user.username }} 👋</h1>
+                <p class="subtext">Manage your car listings, track performance, and add new inventory.</p>
+            </div>
 
-<div class="row g-4">
-
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4">
-            <h6>Total Listings</h6>
-            <h3>8</h3>
+            <div class="top-actions">
+                <a href="{% url 'add_car' %}" class="action-btn primary">+ Add New Car</a>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4">
-            <h6>Pending Inquiries</h6>
-            <h3>4</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Listings</h3>
+                <p>{{ total_listings }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Views</h3>
+                <p>{{ total_views }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Messages</h3>
+                <p>{{ total_messages }}</p>
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-4">
-            <h6>Appointments Today</h6>
-            <h3>2</h3>
-        </div>
-    </div>
+        <section class="car-section">
+            <div class="section-head">
+                <h2>Recent Listings</h2>
+            </div>
+
+            <div class="cars-grid">
+                {% for car in seller_cars %}
+                <div class="car-card">
+                    <div class="car-image-wrap">
+                        {% if car.image %}
+                            <img src="{{ car.image.url }}" alt="{{ car.title }}" class="car-image">
+                        {% else %}
+                            <div class="no-image">No Image</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="car-info">
+                        <h3>{{ car.title }}</h3>
+                        <p class="price">₹{{ car.price }}</p>
+                        <p>{{ car.category|title }}</p>
+
+                        <div class="card-actions">
+                            <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                            <a href="{% url 'edit_car' car.id %}">Edit</a>
+                            <a href="{% url 'delete_car' car.id %}">Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No cars added yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
 
 </div>
 
-<div class="card shadow-sm p-4 mt-5">
-    <h5>Recent Activity</h5>
-    <hr>
-    <p>No recent activity yet.</p>
-</div>
-
-{% endblock %}
+</body>
+</html>

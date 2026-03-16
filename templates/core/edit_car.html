@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Car</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+            margin:0;
+            padding:40px;
+        }
+        .form-box{
+            max-width:700px;
+            margin:auto;
+            background:#fff;
+            padding:30px;
+            border-radius:14px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.08);
+        }
+        h2{ margin-bottom:20px; }
+        button{
+            background:#d93b3b;
+            color:white;
+            border:none;
+            padding:12px 20px;
+            border-radius:8px;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>Edit Car - {{ car.title }}</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Update Car</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ car.title }}</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#f4f4f4;
+            margin:0;
+            padding:40px;
+        }
+        .detail-box{
+            max-width:1000px;
+            margin:auto;
+            background:#fff;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:0 2px 12px rgba(0,0,0,0.08);
+        }
+        .detail-img{
+            width:100%;
+            height:420px;
+            object-fit:cover;
+        }
+        .content{
+            padding:30px;
+        }
+        .price{
+            font-size:28px;
+            font-weight:bold;
+            color:#d93b3b;
+            margin:10px 0 20px;
+        }
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(2, 1fr);
+            gap:16px;
+        }
+        .item{
+            background:#f9fafb;
+            padding:14px;
+            border-radius:10px;
+        }
+        .back{
+            display:inline-block;
+            margin-top:20px;
+            text-decoration:none;
+            color:#111827;
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-box">
+        {% if car.image %}
+            <img src="{{ car.image.url }}" alt="{{ car.title }}" class="detail-img">
+        {% endif %}
+
+        <div class="content">
+            <h1>{{ car.title }}</h1>
+            <div class="price">₹{{ car.price }}</div>
+
+            <div class="grid">
+                <div class="item"><strong>Year:</strong> {{ car.year }}</div>
+                <div class="item"><strong>KM Driven:</strong> {{ car.km_driven }}</div>
+                <div class="item"><strong>Fuel:</strong> {{ car.fuel_type|title }}</div>
+                <div class="item"><strong>Transmission:</strong> {{ car.transmission|title }}</div>
+                <div class="item"><strong>Engine:</strong> {{ car.engine }}</div>
+                <div class="item"><strong>City:</strong> {{ car.city }}</div>
+                <div class="item"><strong>Category:</strong> {{ car.category|title }}</div>
+                <div class="item"><strong>Seller:</strong> {{ car.seller.username }}</div>
+            </div>
+
+            <a href="{% url 'seller_dashboard' %}" class="back">← Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>
