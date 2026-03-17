@@ -2,28 +2,44 @@
 {% load static %}
 
 {% block sidebar %}
-<a class="text-white d-block mb-3 fw-semibold" href="#">Overview</a>
-<a class="text-white d-block mb-3" href="#">Saved Cars</a>
-<a class="text-white d-block mb-3" href="#">Appointments</a>
-<a class="text-white d-block mb-3" href="#">Test Drive</a>
+<a class="text-white d-block mb-3 fw-semibold" href="{% url 'buyer_dashboard' %}">Overview</a>
+
+<a class="text-white d-block mb-3" href="{% url 'inbox' %}">
+💬 Inbox
+</a>
+
+<a class="text-white d-block mb-3" href="{% url 'saved_cars' %}">Saved Cars</a>
+<a class="text-white d-block mb-3" href="{% url 'test_drive_cars' %}">Book Test Drive</a>
+
 <a class="text-danger d-block mt-4" href="{% url 'logout' %}">Logout</a>
 {% endblock %}
 
 {% block content %}
-<div style="background:red;color:white;padding:20px;font-size:30px;">
-    NEW TEMPLATE LOADED
-</div>
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <h2 class="mb-0">Welcome, {{ user.username }} 👋</h2>
 
     <div class="d-flex gap-2 flex-wrap">
-        <a href="#" class="btn btn-light border rounded-pill px-4">Browse Cars</a>
-        <a href="#" class="btn btn-light border rounded-pill px-4">Saved</a>
-        <a href="#" class="btn btn-danger rounded-pill px-4">Book Test Drive</a>
-    </div>
+        <a href="{% url 'saved_cars' %}" class="btn btn-light border rounded-pill px-4">Saved</a>
+        <a href="{% url 'test_drive_cars' %}" class="btn btn-danger rounded-pill px-4">Book Test Drive</a>    </div>
 </div>
+
+<!-- 🔎 SEARCH BAR  -->
+<form method="GET" class="mb-4">
+    <div class="input-group">
+
+        <input
+        type="text"
+        name="search"
+        class="form-control"
+        placeholder="Search cars (BMW, Audi, Tesla...)">
+
+        <button class="btn btn-dark">
+            Search
+        </button>
+
+    </div>
+</form>
 
 <div class="row g-4 mb-5">
     <div class="col-md-4">
@@ -35,8 +51,8 @@
 
     <div class="col-md-4">
         <div class="dashboard-card h-100">
-            <h6>Upcoming Appointments</h6>
-            <h3>{{ appointment_count|default:"0" }}</h3>
+            <h6>Upcoming Test Drive</h6>
+            <h3>{{ testdrive_count|default:"0" }}</h3>
         </div>
     </div>
 
@@ -48,11 +64,7 @@
     </div>
 </div>
 
-<!-- Luxury Cars -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Luxury Cars</h3>
-</div>
-
+<h3 class="mb-3">Luxury Cars</h3>
 <div class="row g-4 mb-5">
     {% for car in luxury_cars %}
     <div class="col-lg-3 col-md-6">
@@ -65,32 +77,26 @@
                 {% endif %}
                 <span class="badge">{{ car.category|title }}</span>
             </div>
-
             <div class="car-info">
                 <h5>{{ car.title }}</h5>
-                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="car-year">({{ car.year }})</p>
                 <p class="price">₹{{ car.price }}</p>
-
                 <div class="card-actions">
                     <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                    {% if car.id in saved_ids %}
+                        <a href="{% url 'saved_cars' %}" class="save-btn saved-heart">♥ Saved</a>
+                    {% else %}
+                        <a href="{% url 'save_car' car.id %}" class="save-btn">♡ Save</a>
+                    {% endif %}
+                    <a href="{% url 'book_test_drive' car.id %}" class="btn btn-outline-dark">Test Drive</a>
                 </div>
             </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="card shadow-sm p-4">
-            <p class="mb-0">No luxury cars available.</p>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- Sports Cars -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Sports Cars</h3>
-</div>
-
+<h3 class="mb-3">Sports Cars</h3>
 <div class="row g-4 mb-5">
     {% for car in sports_cars %}
     <div class="col-lg-3 col-md-6">
@@ -103,32 +109,26 @@
                 {% endif %}
                 <span class="badge">{{ car.category|title }}</span>
             </div>
-
             <div class="car-info">
                 <h5>{{ car.title }}</h5>
-                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="car-year">({{ car.year }})</p>
                 <p class="price">₹{{ car.price }}</p>
-
                 <div class="card-actions">
                     <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                    {% if car.id in saved_ids %}
+                        <a href="{% url 'saved_cars' %}" class="save-btn saved-heart">♥ Saved</a>
+                    {% else %}
+                        <a href="{% url 'save_car' car.id %}" class="save-btn">♡ Save</a>
+                    {% endif %}
+                    <a href="{% url 'book_test_drive' car.id %}" class="btn btn-outline-dark">Test Drive</a>
                 </div>
             </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="card shadow-sm p-4">
-            <p class="mb-0">No sports cars available.</p>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- Electric Cars -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Electric Cars</h3>
-</div>
-
+<h3 class="mb-3">Electric Cars</h3>
 <div class="row g-4">
     {% for car in electric_cars %}
     <div class="col-lg-3 col-md-6">
@@ -141,22 +141,20 @@
                 {% endif %}
                 <span class="badge">{{ car.category|title }}</span>
             </div>
-
             <div class="car-info">
                 <h5>{{ car.title }}</h5>
-                <p class="car-year mb-1">({{ car.year }})</p>
+                <p class="car-year">({{ car.year }})</p>
                 <p class="price">₹{{ car.price }}</p>
-
                 <div class="card-actions">
                     <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                    {% if car.id in saved_ids %}
+                        <a href="{% url 'saved_cars' %}" class="save-btn saved-heart">♥ Saved</a>
+                    {% else %}
+                        <a href="{% url 'save_car' car.id %}" class="save-btn">♡ Save</a>
+                    {% endif %}
+                    <a href="{% url 'book_test_drive' car.id %}" class="btn btn-outline-dark">Test Drive</a>
                 </div>
             </div>
-        </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="card shadow-sm p-4">
-            <p class="mb-0">No electric cars available.</p>
         </div>
     </div>
     {% endfor %}
