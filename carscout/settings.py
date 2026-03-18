@@ -137,3 +137,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'pateldhyanp022@gmail.com'
 EMAIL_HOST_PASSWORD = 'tioe xjnk kqrc ldpk'
+
+
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+RAZORPAY_KEY_ID = "rzp_test_SSZKtRwLRG260k"
+RAZORPAY_KEY_SECRET = "1pVfhgkLhh0bXMNJv9HRclH9"

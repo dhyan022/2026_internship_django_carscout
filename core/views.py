@@ -3,7 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.contrib import messages
-from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
@@ -14,6 +15,10 @@ from .models import SavedCar,TestDrive
 import os
 from django.db.models import Q
 from .models import Conversation, Message, Car
+import random
+from django.core.mail import send_mail
+import razorpay
+from .models import Car, Payment
 
 
 def send_brochure_email(user):
@@ -50,13 +55,62 @@ def signup_view(request):
     if request.method == "POST":
         form = UserSignupForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            send_brochure_email(user)
-            messages.success(request, "Successfully Signed Up! Please login.")
-            return redirect("login")
+            otp = str(random.randint(100000, 999999))
+
+            request.session["signup_data"] = {
+                "username": form.cleaned_data["username"],
+                "email": form.cleaned_data["email"],
+                "password1": form.cleaned_data["password1"],
+                "password2": form.cleaned_data["password2"],
+                "role": form.cleaned_data["role"],
+            }
+
+            request.session["signup_otp"] = otp
+
+            send_mail(
+                subject="CarScout OTP Verification",
+                message=f"Your CarScout OTP is: {otp}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[form.cleaned_data["email"]],
+                fail_silently=False,
+            )
+
+            messages.success(request, "OTP sent to your email.")
+            return redirect("verify_otp")
 
     return render(request, "core/signup.html", {"form": form})
 
+def verify_otp(request):
+    if request.method == "POST":
+        entered_otp = request.POST.get("otp")
+        saved_otp = request.session.get("signup_otp")
+        signup_data = request.session.get("signup_data")
+
+        if not signup_data:
+            messages.error(request, "Signup session expired. Please sign up again.")
+            return redirect("signup")
+
+        if entered_otp == saved_otp:
+            form = UserSignupForm(signup_data)
+
+            if form.is_valid():
+                user = form.save()
+
+                # optional welcome/brochure email
+                send_brochure_email(user)
+
+                request.session.pop("signup_data", None)
+                request.session.pop("signup_otp", None)
+
+                messages.success(request, "Account verified successfully. Please login.")
+                return redirect("login")
+            else:
+                messages.error(request, "Something went wrong. Please sign up again.")
+                return redirect("signup")
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, "core/verify_otp.html")
 
 def login_view(request):
     form = UserLoginForm()
@@ -298,3 +352,76 @@ def test_drive_cars(request):
     cars = Car.objects.all().order_by("-id")
 
     return render(request, "core/test_drive_cars.html", {"cars": cars})
+
+@login_required
+def my_listings(request):
+    if request.user.profile.role != "seller":
+        messages.error(request, "Only sellers can access My Listings.")
+        return redirect("home")
+
+    seller_cars = Car.objects.filter(seller=request.user).order_by("-id")
+
+    return render(request, "core/my_listings.html", {
+        "seller_cars": seller_cars
+    })
+
+@login_required
+def start_payment(request, car_id):
+    car = get_object_or_404(Car, id=car_id)
+
+    # example: ₹500 booking fee = 50000 paise
+    amount = 50000
+
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    order_data = {
+        "amount": amount,
+        "currency": "INR",
+        "payment_capture": 1
+    }
+    order = client.order.create(data=order_data)
+
+    payment = Payment.objects.create(
+        user=request.user,
+        car=car,
+        amount=amount,
+        razorpay_order_id=order["id"],
+        status="created"
+    )
+
+    context = {
+        "car": car,
+        "payment": payment,
+        "razorpay_key_id": settings.RAZORPAY_KEY_ID,
+        "amount": amount,
+        "order_id": order["id"],
+    }
+    return render(request, "core/payment.html", context)
+
+@csrf_exempt
+@login_required
+def verify_payment(request):
+    if request.method == "POST":
+        razorpay_payment_id = request.POST.get("razorpay_payment_id")
+        razorpay_order_id = request.POST.get("razorpay_order_id")
+        razorpay_signature = request.POST.get("razorpay_signature")
+
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        try:
+            client.utility.verify_payment_signature({
+                "razorpay_order_id": razorpay_order_id,
+                "razorpay_payment_id": razorpay_payment_id,
+                "razorpay_signature": razorpay_signature
+            })
+
+            payment = Payment.objects.get(razorpay_order_id=razorpay_order_id)
+            payment.razorpay_payment_id = razorpay_payment_id
+            payment.razorpay_signature = razorpay_signature
+            payment.status = "paid"
+            payment.save()
+
+            return HttpResponse("Payment verified successfully")
+
+        except:
+            return HttpResponseBadRequest("Payment verification failed")

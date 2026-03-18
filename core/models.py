@@ -89,3 +89,19 @@ class Message(models.Model):
 
     def __str__(self):
         return f"{self.sender.username}: {self.text[:30]}"
+    
+
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    car = models.ForeignKey("Car", on_delete=models.CASCADE, null=True, blank=True)
+
+    amount = models.IntegerField()  # store in paise
+    razorpay_order_id = models.CharField(max_length=200, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=200, blank=True, null=True)
+    razorpay_signature = models.CharField(max_length=500, blank=True, null=True)
+
+    status = models.CharField(max_length=20, default="created")  # created, paid, failed
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.status}"
