@@ -5,9 +5,10 @@
 <a class="text-white d-block mb-3 fw-semibold" href="{% url 'buyer_dashboard' %}">Overview</a>
 
 <a class="text-white d-block mb-3" href="{% url 'inbox' %}">
-💬 Inbox
+    💬 Inbox
 </a>
 
+<a class="text-white d-block mb-3" href="{% url 'compare_cars' %}">Compare</a>
 <a class="text-white d-block mb-3" href="{% url 'saved_cars' %}">Saved Cars</a>
 <a class="text-white d-block mb-3" href="{% url 'test_drive_cars' %}">Book Test Drive</a>
 
@@ -20,24 +21,23 @@
     <h2 class="mb-0">Welcome, {{ user.username }} 👋</h2>
 
     <div class="d-flex gap-2 flex-wrap">
+         <a href="{% url 'notifications' %}" class="top-action-btn">🔔 Notifications</a>
         <a href="{% url 'saved_cars' %}" class="btn btn-light border rounded-pill px-4">Saved</a>
-        <a href="{% url 'test_drive_cars' %}" class="btn btn-danger rounded-pill px-4">Book Test Drive</a>    </div>
+        <a href="{% url 'test_drive_cars' %}" class="btn btn-danger rounded-pill px-4">Book Test Drive</a>
+    </div>
 </div>
 
-<!-- 🔎 SEARCH BAR  -->
+<!-- SEARCH BAR -->
 <form method="GET" class="mb-4">
     <div class="input-group">
-
         <input
-        type="text"
-        name="search"
-        class="form-control"
-        placeholder="Search cars (BMW, Audi, Tesla...)">
-
-        <button class="btn btn-dark">
-            Search
-        </button>
-
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search cars (BMW, Audi, Tesla...)"
+            value="{{ search_query }}"
+        >
+        <button type="submit" class="btn btn-dark">Search</button>
     </div>
 </form>
 
@@ -63,6 +63,42 @@
         </div>
     </div>
 </div>
+
+{% if search_query %}
+    <h3 class="mb-3">Search Results for "{{ search_query }}"</h3>
+    <div class="row g-4 mb-5">
+        {% for car in searched_cars %}
+        <div class="col-lg-3 col-md-6">
+            <div class="car-card">
+                <div class="car-image-wrap">
+                    {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car.title }}" class="car-image">
+                    {% else %}
+                        <div class="no-image">No Image</div>
+                    {% endif %}
+                    <span class="badge">{{ car.category|title }}</span>
+                </div>
+                <div class="car-info">
+                    <h5>{{ car.title }}</h5>
+                    <p class="car-year">({{ car.year }})</p>
+                    <p class="price">₹{{ car.price }}</p>
+                    <div class="card-actions">
+                        <a href="{% url 'car_detail' car.id %}" class="view-btn">View</a>
+                        {% if car.id in saved_ids %}
+                            <a href="{% url 'saved_cars' %}" class="save-btn saved-heart">♥ Saved</a>
+                        {% else %}
+                            <a href="{% url 'save_car' car.id %}" class="save-btn">♡ Save</a>
+                        {% endif %}
+                        <a href="{% url 'book_test_drive' car.id %}" class="btn btn-outline-dark">Test Drive</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No cars found.</p>
+        {% endfor %}
+    </div>
+{% endif %}
 
 <h3 class="mb-3">Luxury Cars</h3>
 <div class="row g-4 mb-5">
@@ -93,6 +129,8 @@
             </div>
         </div>
     </div>
+    {% empty %}
+    <p>No luxury cars available.</p>
     {% endfor %}
 </div>
 
@@ -125,6 +163,8 @@
             </div>
         </div>
     </div>
+    {% empty %}
+    <p>No sports cars available.</p>
     {% endfor %}
 </div>
 
@@ -157,6 +197,8 @@
             </div>
         </div>
     </div>
+    {% empty %}
+    <p>No electric cars available.</p>
     {% endfor %}
 </div>
 
